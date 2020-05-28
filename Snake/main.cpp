@@ -53,8 +53,8 @@ enum objects {EMPTY, WALL, SNAKE_HEAD, SNAKE_TAIL, FRUIT};
 objects** Map;
 
 //map size
-const int m_x = 40;
-const int m_y = 10;
+const int map_x = 40;
+const int map_y = 10;
 
 //inheritation
 class GameObject
@@ -236,11 +236,118 @@ bool Snake::Ate()
     return false;
 }
 
+void Snake::MoveTail()
+{
+    //Back tail removal when moving
+    Map[tails[tailsize - 1].y][tails[tailsize - 1].x] = EMPTY;
+
+    //replace old tail with new tail to create a movement effect
+    for (int i=tailsize - 1; i!=0; i--)
+    {
+        tails[i].x = tails[i-1].x;
+        tails[i].y = tails[i-1].y;
+    }
+    tails[0].x = x_old;
+    tails[0].y = y_old;
+    Map[y_old][x_old] = SNAKE_TAIL;
+}
+
+
+void Snake::Collision()
+{
+    //function to check if snake hit the wall
+    if (x == 0 || x == 39)
+    {
+        cout << "GAME OVER";
+        system("pause");
+        exit(0);
+    }
+
+    if (direction == 1 && Map[y - 1][x] == WALL || direction == 4 && Map[y + 1][x] == WALL)
+    {
+        cout << "GAME OVER";
+        system("pause");
+        exit(0);
+    }
+    if (direction == 1 && Map[y - 1][x] == SNAKE_TAIL)
+    {
+        cout << "GAME OVER";
+        system("pause");
+        exit(0);
+    }
+    else if (direction == 2 && Map[y][x - 1] == SNAKE_TAIL)
+    {
+        cout << "GAME OVER";
+        system("pause");
+        exit(0);
+    }
+    else if (direction == 3 && Map[y][x + 1] == SNAKE_TAIL)
+    {
+        cout << "GAME OVER";
+        system("pause");
+        exit(0);
+    }
+    else if (direction == 4 && Map[y + 1][x] == SNAKE_TAIL)
+    {
+        cout << "GAME OVER";
+        system("pause");
+        exit(0);
+    }
+}
+
+void Snake::update()
+{
+    KeyBoard();
+    AddTail();
+    Collision();
+    MoveSnake();
+    MoveTail();
+}
+
+//new class inherits GameObject class
+class Fruit:public GameObject
+{
+public:
+
+   void update();
+
+private:
+    int x;
+    int y;
+
+    //Helper methods
+    void spawnFruit();
+    bool checkFruit();
+};
+
+void Fruit::spawnFruit() //spawns a fruit randomly
+{
+    int x,y;
+    x = 1 + rand() % 38;
+    y = 1 + rand() % 8;
+
+    Map[y][x] = FRUIT;
+}
+
+bool Fruit::checkFruit()
+{
+    for (int i=1;i<map_y - 1;i++)
+    {
+        for (int j=1;j<map_x - 1;j++)
+        {
+            if (Map[i][j] == FRUIT)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 int main()
 {
     system("color A");
     char Starter=GameMenu(Starter);
-    //cout<<"elementas: "<<Starter<<endl;
     system ("CLS");
     if(Starter=='S' || Starter=='s')
     {
