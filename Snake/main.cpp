@@ -84,14 +84,77 @@ private:
     //Array of tails
     vector<Tail>tails;
 
-    void _KeyBoard();
-    void _MoveSnake();
-    void _AddTail();
-    bool _Ate();
-    void _MoveTail();
-    void _Collision();
+    void KeyBoard();
+    void MoveSnake();
+    void AddTail();
+    bool Ate();
+    void MoveTail();
+    void Collision();
 };
 //player input check
+
+void Snake::KeyBoard()
+{
+
+    //kbhit - It will not wait for a key to be pressed
+    if (kbhit())
+    {
+        char input = getch();
+
+        if (input == 'w' || input == 'W')
+        {
+            direction = 1;
+        }
+        else if (input == 'a' || input == 'A')
+        {
+            direction = 2;
+        }
+        else if (input == 'd' || input == 'D')
+        {
+            direction = 3;
+        }
+        else if (input == 's' || input == 'S')
+        {
+            direction = 4;
+        }
+    }
+}
+
+void Snake::MoveSnake()
+{
+    //Saves last known location
+    x_old = x;
+    y_old = y;
+
+    switch(direction)
+    {
+    case 1:
+    {
+        y--;
+        break;
+    }
+    case 2:
+    {
+        x--;
+        break;
+    }
+    case 3:
+    {
+        x++;
+        break;
+    }
+    case 4:
+    {
+        y++;
+        break;
+    }
+    }
+
+    //Puts the snake's hean in field
+    Map[y_old][x_old] = EMPTY;
+    Map[y][x] = SNAKE_HEAD;
+}
+
 
 int main()
 {
@@ -106,9 +169,15 @@ int main()
     else if(Starter=='I' || Starter=='i')
     {
         cout<<"Snake game developed by Titas"<<endl;
+        /*
+        1                up
+        2       3     left        right
+        4               down
+        */
     }
     else if(Starter=='Q' || Starter=='q')
     {
+
         cout<<"QQQ"<<endl;
     }
     return 0;
