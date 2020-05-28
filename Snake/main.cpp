@@ -5,6 +5,7 @@
 #include <ctime>
 #include <vector>
 #include <windows.h>
+#include <iomanip>
 
 using namespace std;
 
@@ -70,11 +71,11 @@ public:
     void update();
 
 private:
-    int _x = 19; //snake spawn location
-    int _y = 4; //by x and y coordinates
-    int _x_old, _y_old; //old coordinates
-    int _direction = 3; //default snake location on start
-    int _tsize = 0; //snake tail size
+    int x = 19; //snake's default spawn location
+    int y = 4; //by x and y coordinates
+    int x_old, y_old; //old coordinates
+    int direction = 3; //default snake moving direction on start
+    int tailsize = 0; //snake tail size
 
     struct Tail
     {
@@ -155,6 +156,85 @@ void Snake::MoveSnake()
     Map[y][x] = SNAKE_HEAD;
 }
 
+//
+//Function to increase tail size
+//Adds default tail size at the start
+//
+
+void Snake::AddTail()
+{
+    if (tailsize == 0)
+    {
+        for (int i=0; i<2; i++)
+        {
+            tails.push_back(Tail());
+            tails[i].x = 19 - i; //adds tail after default spawn position
+            tails[i].y = 4;
+
+            Map[tails[i].y][tails[i].x] = SNAKE_TAIL;
+            tailsize++;
+        }
+    }
+
+    if (Ate())
+    {
+        tails.push_back(Tail());
+
+        //New tail coordinate creation
+        switch(direction)
+        {
+        case 1:
+        {
+            tails[tailsize].x = tails[tailsize - 1].x;
+            tails[tailsize].y = tails[tailsize - 1].y - 1;
+            break;
+        }
+        case 2:
+        {
+            tails[tailsize].x = tails[tailsize - 1].x + 1;
+            tails[tailsize].y = tails[tailsize - 1].y;
+            break;
+        }
+        case 3:
+        {
+            tails[tailsize].x = tails[tailsize - 1].x - 1;
+            tails[tailsize].y = tails[tailsize - 1].y;
+            break;
+        }
+        case 4:
+        {
+            tails[tailsize].x = tails[tailsize - 1].x;
+            tails[tailsize].y = tails[tailsize - 1].y + 1;
+            break;
+        }
+        }
+        tailsize++;
+    }
+}
+
+//check if snake ate
+bool Snake::Ate()
+{
+    //check if snake's head is in the same coordinate as fruit
+    if (direction == 1 && Map[y - 1][x] == FRUIT)
+    {
+        return true;
+    }
+    else if (direction == 2 && Map[y][x - 1] == FRUIT)
+    {
+        return true;
+    }
+    else if (direction == 3 && Map[y][x + 1] == FRUIT)
+    {
+        return true;
+    }
+    else if (direction == 4 && Map[y + 1][x] == FRUIT)
+    {
+        return true;
+    }
+
+    return false;
+}
 
 int main()
 {
@@ -169,11 +249,7 @@ int main()
     else if(Starter=='I' || Starter=='i')
     {
         cout<<"Snake game developed by Titas"<<endl;
-        /*
-        1                up
-        2       3     left        right
-        4               down
-        */
+
     }
     else if(Starter=='Q' || Starter=='q')
     {
