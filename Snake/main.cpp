@@ -344,6 +344,66 @@ bool Fruit::checkFruit()
     return false;
 }
 
+void Fruit::update()
+{
+    if (!checkFruit())
+    {
+        spawnFruit();
+    }
+}
+
+//CREATES A LIST THAT UPDATES EACH OBJECT OF THE GAME
+void Scene(vector<GameObject*>&updates)
+{
+    if (updates.size() == 0)
+    {
+        updates.push_back(new Snake());
+        updates.push_back(new Fruit());
+    }
+
+    for (vector<GameObject*>::iterator itr = updates.begin(), end = updates.end();itr != end; itr++)
+    {
+        (*itr)->update();
+    }
+
+
+}
+
+void draw()
+{
+    //ScreenRefresh
+    COORD cur = {0,0};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
+
+    for(int i=0;i<map_y;i++)
+    {
+        for (int j=0;j<map_x;j++)
+        {
+            if (Map[i][j] == WALL)
+            {
+                cout << "#";
+            }
+            else if (Map[i][j] == EMPTY)
+            {
+                cout << " ";
+            }
+            else if (Map[i][j] == SNAKE_HEAD)
+            {
+                cout << "O";
+            }
+            else if (Map[i][j] == SNAKE_TAIL)
+            {
+                cout << "-";
+            }
+            else if (Map[i][j] == FRUIT)
+            {
+                cout << "*";
+            }
+        }
+        cout << endl;
+    }
+}
+
 int main()
 {
     system("color A");
