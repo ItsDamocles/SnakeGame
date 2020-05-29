@@ -54,7 +54,7 @@ objects** Map;
 
 //map size
 const int map_x = 40;
-const int map_y = 10;
+const int map_y = 20;
 
 //inheritation
 class GameObject
@@ -71,10 +71,10 @@ public:
     void update();
 
 private:
-    int x = 19; //snake's default spawn location
-    int y = 4; //by x and y coordinates
+    int x = 20; //snake's default spawn location
+    int y = 10; //by x and y coordinates
     int x_old, y_old; //old coordinates
-    int direction = 3; //default snake moving direction on start
+    int direction = 1; //default snake moving direction on start
     int tailsize = 0; //snake tail size
 
     struct Tail
@@ -102,19 +102,19 @@ void Snake::KeyBoard()
     {
         char input = getch();
 
-        if (input == 'w' || input == 'W')
+        if(input == 'w' || input == 'W')
         {
             direction = 1;
         }
-        else if (input == 'a' || input == 'A')
+        else if(input == 'a' || input == 'A')
         {
             direction = 2;
         }
-        else if (input == 'd' || input == 'D')
+        else if(input == 'd' || input == 'D')
         {
             direction = 3;
         }
-        else if (input == 's' || input == 'S')
+        else if(input == 's' || input == 'S')
         {
             direction = 4;
         }
@@ -252,44 +252,39 @@ void Snake::MoveTail()
     Map[y_old][x_old] = SNAKE_TAIL;
 }
 
-
 void Snake::Collision()
 {
+    char Symbol;
     //function to check if snake hit the wall
     if (x == 0 || x == 39)
     {
-        cout << "GAME OVER";
+        cout<<"GAME OVER"<<endl;
         system("pause");
         exit(0);
+
     }
 
     if (direction == 1 && Map[y - 1][x] == WALL || direction == 4 && Map[y + 1][x] == WALL)
     {
-        cout << "GAME OVER";
+        cout<<"GAME OVER"<<endl;
         system("pause");
         exit(0);
     }
     if (direction == 1 && Map[y - 1][x] == SNAKE_TAIL)
     {
-        cout << "GAME OVER";
-        system("pause");
-        exit(0);
-    }
-    else if (direction == 2 && Map[y][x - 1] == SNAKE_TAIL)
-    {
-        cout << "GAME OVER";
+        cout<<"GAME OVER"<<endl;
         system("pause");
         exit(0);
     }
     else if (direction == 3 && Map[y][x + 1] == SNAKE_TAIL)
     {
-        cout << "GAME OVER";
+        cout<<"GAME OVER"<<endl;
         system("pause");
         exit(0);
     }
     else if (direction == 4 && Map[y + 1][x] == SNAKE_TAIL)
     {
-        cout << "GAME OVER";
+        cout << "GAME OVER"<<endl;
         system("pause");
         exit(0);
     }
@@ -309,7 +304,7 @@ class Fruit:public GameObject
 {
 public:
 
-   void update();
+    void update();
 
 private:
     int x;
@@ -331,9 +326,9 @@ void Fruit::spawnFruit() //spawns a fruit randomly
 
 bool Fruit::checkFruit()
 {
-    for (int i=1;i<map_y - 1;i++)
+    for (int i=1; i<map_y - 1; i++)
     {
-        for (int j=1;j<map_x - 1;j++)
+        for (int j=1; j<map_x - 1; j++)
         {
             if (Map[i][j] == FRUIT)
             {
@@ -361,11 +356,10 @@ void Scene(vector<GameObject*>&updates)
         updates.push_back(new Fruit());
     }
 
-    for (vector<GameObject*>::iterator itr = updates.begin(), end = updates.end();itr != end; itr++)
+    for (vector<GameObject*>::iterator itr = updates.begin(), end = updates.end(); itr != end; itr++)
     {
         (*itr)->update();
     }
-
 
 }
 
@@ -375,9 +369,9 @@ void draw()
     COORD cur = {0,0};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
 
-    for(int i=0;i<map_y;i++)
+    for(int i=0; i<map_y; i++)
     {
-        for (int j=0;j<map_x;j++)
+        for (int j=0; j<map_x; j++)
         {
             if (Map[i][j] == WALL)
             {
@@ -406,22 +400,65 @@ void draw()
 
 int main()
 {
+    Menu:
     system("color A");
     char Starter=GameMenu(Starter);
     system ("CLS");
     if(Starter=='S' || Starter=='s')
     {
-
+        goto gameStarter;
     }
     else if(Starter=='I' || Starter=='i')
     {
-        cout<<"Snake game developed by Titas"<<endl;
 
+        cout<<"How to play"<<endl;
+        cout<<"W-Up, S-Down, A-Left, D-Right"<<endl;
+        cout<<"Press any key to go back to menu"<<endl;
+        char Back;
+        if(Back=getch())
+        {
+            system ("CLS");
+            goto Menu;
+        }
     }
     else if(Starter=='Q' || Starter=='q')
     {
-
-        cout<<"QQQ"<<endl;
+        system("pause");
+        exit(0);
     }
+
+gameStarter:
+    Map = new objects*[map_y];
+    for (int i=0; i<map_y; i++)
+    {
+        Map[i] = new objects[map_x];
+    }
+    //
+    //Create map
+    //
+    for (int i=0; i<map_y; i++)
+    {
+        for (int j=0; j<map_x; j++)
+        {
+            if (i == 0 || i == map_y-1 || j == 0 || j == map_x-1)
+            {
+                Map[i][j] = WALL;
+            }
+            else
+            {
+                Map[i][j] = EMPTY;
+            }
+        }
+    }
+    //constant object status update
+    vector<GameObject*>updates;
+
+    while(1)
+    {
+        draw();
+        Scene(updates);
+        Sleep(70);
+    }
+
     return 0;
 }
